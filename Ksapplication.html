@@ -1,1 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KS Bot Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://www.paypal.com/sdk/js?client-id=AcWQ7sMjxp_4A1kOdT3br0wjdm-nrdnPpnzTn5e9zn2Xg1nuFbgXbC8hfpT7Zf7Iszj_eO7MblDJuVcR&vault=true"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --bg-primary: #0a0e27;
+            --bg-secondary: #1a1f3a;
+            --bg-card: #252b48;
+            --text-primary: #ffffff;
+            --text-secondary: #a0aec0;
+            --accent-blue: #4facfe;
+            --accent-purple: #9d50ff;
+            --accent-green: #00ff88;
+            --accent-yellow: #ffd93d;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
 
+        [data-theme="light"] {
+            --bg-primary: #f5f7fa;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --text-primary: #1a202c;
+            --text-secondary: #718096;
+            --border-color: rgba(0, 0, 0, 0.1);
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .matrix-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.15;
+        }
+
+        .matrix-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.7rem;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            z-index: 999;
+        }
+
+        .navbar {
+            background: var(--bg-secondary);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-left, .nav-right { display: flex; align-items: center; gap: 1rem; }
+
+        .nav-brand {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            color: white;
+            border: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .nav-logo { display: flex; align-items: center; gap: 0.5rem; font-size: 1.5rem; font-weight: bold; color: var(--accent-blue); }
+
+        .nav-link {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            padding: 0.7rem 1rem;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .theme-toggle { background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); padding: 0.7rem; border-radius: 8px; cursor: pointer; }
+
+        .user-dropdown { position: relative; }
+        .user-btn { background: var(--bg-card); border: 1px solid var(--border-color); padding: 0.5rem 1rem; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 0.7rem; color: var(--text-primary); }
+        .user-btn img { width: 32px; height: 32px; border-radius: 50%; }
+        .dropdown-menu { position: absolute; top: 110%; right: 0; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; padding: 0.5rem; min-width: 200px; display: none; box-shadow: var(--shadow); }
+        .dropdown-menu.active { display: block; }
+        .dropdown-menu a { display: flex; align-items: center; gap: 0.7rem; padding: 0.7rem 1rem; color: var(--text-primary); text-decoration: none; border-radius: 6px; }
+
+        .main-container { max-width: 1400px; margin: 2rem auto; padding: 0 2rem; }
+        .page { display: none; }
+        .page.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .premium-badge { background: linear-gradient(135deg, #ffd93d, #ff6b00); color: white; border: none; padding: 0.7rem 1.5rem; border-radius: 10px; font-weight: 600; cursor: pointer; }
+
+        .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin: 2rem 0; }
+        .pricing-card { background: var(--bg-card); border: 2px solid var(--border-color); border-radius: 15px; padding: 2rem; text-align: center; }
+        .price { font-size: 3rem; font-weight: 700; color: var(--accent-blue); }
+        .paypal-button-container { margin-top: 1.5rem; }
+    </style>
+</head>
+<body data-theme="dark">
+    <canvas id="matrix-bg" class="matrix-background"></canvas>
+    <button class="matrix-toggle" onclick="toggleMatrix()"><i class="fas fa-eye"></i></button>
+
+    <nav class="navbar">
+        <div class="nav-left">
+            <button class="nav-brand" onclick="window.location.href='https://kssnexus.online/'">
+                <i class="fas fa-arrow-left"></i> Nexus
+            </button>
+            <div class="nav-logo"><i class="fas fa-robot"></i> KS Bot</div>
+        </div>
+        <div class="nav-right">
+            <button class="nav-link" onclick="showPage('home')"><i class="fas fa-home"></i> Home</button>
+            <a href="https://discord.gg/your-invite" target="_blank" class="nav-link"><i class="fas fa-headset"></i> Support</a>
+            <button class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-moon" id="theme-icon"></i></button>
+            <div class="user-dropdown">
+                <button class="user-btn" onclick="toggleDropdown()">
+                    <img src="https://cdn.discordapp.com/embed/avatars/0.png" id="userAvatar">
+                    <span id="userName">Login</span>
+                </button>
+                <div class="dropdown-menu" id="userDropdown">
+                    <a href="#" onclick="loginDiscord()"><i class="fas fa-sign-in-alt"></i> Login</a>
+                    <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <div id="page-home" class="page active">
+            <h1>Select a Server</h1>
+            <div id="serversGrid"></div>
+        </div>
+
+        <div id="page-premium" class="page">
+            <h1 style="text-align: center; margin-bottom: 2rem;">Premium Plans</h1>
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h3>1 Month</h3>
+                    <div class="price">$5.99</div>
+                    <div id="paypal-1month" class="paypal-button-container"></div>
+                </div>
+                <div class="pricing-card">
+                    <h3>3 Months</h3>
+                    <div class="price">$18.99</div>
+                    <div id="paypal-3month" class="paypal-button-container"></div>
+                </div>
+                <div class="pricing-card">
+                    <h3>6 Months</h3>
+                    <div class="price">$45.99</div>
+                    <div id="paypal-6month" class="paypal-button-container"></div>
+                </div>
+                <div class="pricing-card">
+                    <h3>1 Year</h3>
+                    <div class="price">$85.99</div>
+                    <div id="paypal-1year" class="paypal-button-container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = window.location.origin + '/api';
+        const DISCORD_CLIENT_ID = '1439843855514996786';
+        const ADMIN_SERVERS = ['1430022675765395509', '596055087478996992', '707320040969732127', '523710787928457227'];
+        const OWNER_ID = '523709000961753089'; // Free lifetime premium
+        const PAYPAL_PLANS = { '1month': '4X5491703Y310040PNENLAHQ', '3month': '0E9816646G923921HNENLA7I', '6month': '38T60030WK1183926NENLBVA', '1year': '66B73980P6411453YNENLCOA' };
+
+        let currentUser = null;
+        let matrixEnabled = true;
+
+        // Matrix Effect
+        const canvas = document.getElementById('matrix-bg');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const matrix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()";
+        const fontSize = 14;
+        const columns = Math.floor(canvas.width / fontSize);
+        const drops = Array(columns).fill(1);
+
+        function drawMatrix() {
+            if (!matrixEnabled) return;
+            ctx.fillStyle = 'rgba(10, 14, 39, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#0F0';
+            ctx.font = fontSize + 'px monospace';
+            for (let i = 0; i < drops.length; i++) {
+                const text = matrix[Math.floor(Math.random() * matrix.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+        }
+        setInterval(drawMatrix, 35);
+
+        function toggleMatrix() {
+            matrixEnabled = !matrixEnabled;
+            if (!matrixEnabled) ctx.clearRect(0, 0, canvas.width, canvas.height);
+            localStorage.setItem('matrixEnabled', matrixEnabled);
+        }
+
+        function toggleTheme() {
+            const body = document.body;
+            const icon = document.getElementById('theme-icon');
+            const theme = body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            body.setAttribute('data-theme', theme);
+            icon.className = theme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+            localStorage.setItem('theme', theme);
+        }
+
+        function toggleDropdown() {
+            document.getElementById('userDropdown').classList.toggle('active');
+        }
+
+        function showPage(page) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('page-' + page).classList.add('active');
+        }
+
+        function loginDiscord() {
+            const redirect = encodeURIComponent(window.location.origin + '/auth/callback');
+            window.location.href = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${redirect}&response_type=code&scope=identify%20guilds`;
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('token');
+            document.getElementById('userName').textContent = 'Login';
+            loadServers();
+        }
+
+        async function loadServers() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                document.getElementById('serversGrid').innerHTML = '<p>Please login to view your servers.</p>';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/servers`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const servers = await response.json();
+                
+                document.getElementById('serversGrid').innerHTML = servers.map(server => `
+                    <div onclick="openDashboard('${server.id}')">
+                        <img src="${server.icon || 'https://cdn.discordapp.com/embed/avatars/0.png'}">
+                        <h3>${server.name}</h3>
+                        ${server.premium ? '<span>Premium</span>' : ''}
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading servers:', error);
+                document.getElementById('serversGrid').innerHTML = '<p>Error loading servers. Please try again.</p>';
+            }
+        }
+
+        function openDashboard(serverId) {
+            window.location.href = `/dashboard/${serverId}`;
+        }
+
+        // PayPal Buttons
+        Object.keys(PAYPAL_PLANS).forEach(plan => {
+            paypal.Buttons({
+                createSubscription: (data, actions) => actions.subscription.create({ 'plan_id': PAYPAL_PLANS[plan] }),
+                onApprove: async (data) => {
+                    await fetch(`${API_URL}/premium/activate`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+                        body: JSON.stringify({ subscriptionId: data.subscriptionID, plan })
+                    });
+                    alert('Premium activated!');
+                }
+            }).render('#paypal-' + plan);
+        });
+
+        // Load theme
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            document.body.setAttribute('data-theme', savedTheme);
+            document.getElementById('theme-icon').className = savedTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+        }
+
+        // Load matrix preference
+        const savedMatrix = localStorage.getItem('matrixEnabled');
+        if (savedMatrix !== null) matrixEnabled = savedMatrix === 'true';
+
+        // Init
+        document.addEventListener('DOMContentLoaded', loadServers);
+    </script>
+</body>
+</html>

@@ -204,7 +204,20 @@
   .weather-hero{background:linear-gradient(135deg,#0c4a6e,#1e3a8a);padding:150px 20px 80px;text-align:center}
   .weather-icon{font-size:6rem;margin-bottom:1rem}
   .weather-title{font-family:'Orbitron',sans-serif;font-size:3.5rem;background:linear-gradient(135deg,#7dd3fc,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-
+/* Bot Status Badge */
+.bot-status{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:4px 10px;
+  border-radius:12px;
+  font-size:11px;
+  font-weight:700;
+  margin-top:8px;
+}
+.bot-status.online{background:rgba(0,255,136,0.15);color:#00ff88;border:1px solid rgba(0,255,136,0.3)}
+.bot-status.offline{background:rgba(255,51,51,0.15);color:#ff3333;border:1px solid rgba(255,51,51,0.3)}
+.bot-status .dot{width:6px;height:6px;border-radius:50%;background:currentColor}
   @media (max-width:520px){
     .brand img{width:44px;height:44px}
     .hero img{width:150px}
@@ -296,16 +309,17 @@
           </div>
         </article>
 
-        <article class="bot" role="listitem">
-          <div class="img"><img src="https://media.discordapp.net/attachments/1428592257581318255/1437805775727628401/Midwest_Weather_2.0.png?ex=6914947a&is=691342fa&hm=3e7cb0ad26cd0a6fd15f6926bf05ccabafd896537b53551c41c3662e3699ce1c&=&format=webp&quality=lossless&width=648&height=648" alt="Midwest Weather bot"></div>
-          <h3>Midwest Weather™</h3>
-          <p>Regional weather forecasts — choose West/Mid/East, state, then town for precise local info & All the Way In to Canada & Growing.</p>
-          <div class="meta">
-            <span class="pill">Weather forecasts</span>
-            <a href="https://discord.com/oauth2/authorize?client_id=1337840899773829180&permissions=8&integration_type=0&scope=bot" target="_blank" rel="noopener noreferrer" class="pill-link">Invite Bot</a>
-            <a href="weather.html" class="pill-link">Midwest Weather Bot</a>
-          </div>
-        </article>
+        <article class="bot" role="listitem" data-bot="weather">
+  <div class="img"><img src="https://media.discordapp.net/attachments/1428592257581318255/1437805775727628401/Midwest_Weather_2.0.png?ex=6914947a&is=691342fa&hm=3e7cb0ad26cd0a6fd15f6926bf05ccabafd896537b53551c41c3662e3699ce1c&=&format=webp&quality=lossless&width=648&height=648" alt="Midwest Weather bot"></div>
+  <h3>Midwest Weather™</h3>
+  <div class="bot-status offline" id="status-weather"><span class="dot"></span> Connecting...</div>
+  <p>Regional weather forecasts — choose West/Mid/East, state, then town for precise local info & All the Way In to Canada & Growing.</p>
+  <div class="meta">
+    <span class="pill">Weather forecasts</span>
+    <a href="https://discord.com/oauth2/authorize?client_id=1337840899773829180&permissions=8&integration_type=0&scope=bot" target="_blank" rel="noopener noreferrer" class="pill-link">Invite Bot</a>
+    <a href="weather.html" class="pill-link">Midwest Weather Bot</a>
+  </div>
+</article>
 
         <article class="bot" role="listitem">
           <div class="img"><img src="https://cdn.discordapp.com/attachments/1428592257581318255/1432304819158126734/Diane_Keaton_2012-1_cropped_cropped.jpg?ex=691457cf&is=6913064f&hm=817fed2fd19e57d2ab5550d10a001ab0c0a09018573346a00b9322dc005c8cc7&" alt="Diane Keaton bot"></div>
@@ -1112,6 +1126,37 @@ toggle.addEventListener('keydown', (e) => {
     e.preventDefault();
     toggle.click();
   }
+  // Bot API endpoint
+const WEATHER_BOT_API = 'https://api.midwestweather.online:3000';
+
+// Check bot status
+async function checkWeatherBotStatus() {
+  try {
+    const res = await fetch(WEATHER_BOT_API);
+    const data = await res.json();
+    const statusEl = document.getElementById('status-weather');
+    
+    if (statusEl && data.online) {
+      statusEl.className = 'bot-status online';
+      statusEl.innerHTML = '<span class="dot"></span> Online';
+    } else {
+      statusEl.className = 'bot-status offline';
+      statusEl.innerHTML = '<span class="dot"></span> Offline';
+    }
+  } catch (err) {
+    const statusEl = document.getElementById('status-weather');
+    if (statusEl) {
+      statusEl.className = 'bot-status offline';
+      statusEl.innerHTML = '<span class="dot"></span> Offline';
+    }
+  }
+}
+
+// Check on page load
+checkWeatherBotStatus();
+
+// Check every 30 seconds
+setInterval(checkWeatherBotStatus, 30000);
 });
 </script>
 </body>

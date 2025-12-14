@@ -317,7 +317,7 @@
   <div class="meta">
     <span class="pill">Weather forecasts</span>
     <a href="https://discord.com/oauth2/authorize?client_id=1337840899773829180&permissions=8&integration_type=0&scope=bot" target="_blank" rel="noopener noreferrer" class="pill-link">Invite Bot</a>
-    <a href="weather.html" class="pill-link">Midwest Weather Bot</a>
+    <a href="https://midwestweather.online/" class="pill-link">Midwest Weather Bot</a>
   </div>
 </article>
 
@@ -1128,7 +1128,52 @@ toggle.addEventListener('keydown', (e) => {
   }
   // Bot API endpoint
 const WEATHER_BOT_API = 'https://api.midwestweather.online:3000/api/status';
+(async function() {
+  const statusEl = document.getElementById('status-weather');
+  
+  try {
+    console.log('Checking weather bot status...');
+    const res = await fetch('https://api.midwestweather.online:3000/api/status');
+    console.log('Response status:', res.status);
+    
+    const data = await res.json();
+    console.log('Response data:', data);
+    
+    if (statusEl) {
+      if (data.online === true) {
+        statusEl.className = 'bot-status online';
+        statusEl.innerHTML = '<span class="dot"></span> Online';
+      } else {
+        statusEl.className = 'bot-status offline';
+        statusEl.innerHTML = '<span class="dot"></span> Offline';
+      }
+    }
+  } catch (err) {
+    console.error('ERROR:', err);
+    if (statusEl) {
+      statusEl.className = 'bot-status offline';
+      statusEl.innerHTML = '<span class="dot"></span> API Error';
+    }
+  }
+})();
 
+// Update every 30 seconds
+setInterval(async () => {
+  const statusEl = document.getElementById('status-weather');
+  try {
+    const res = await fetch('https://api.midwestweather.online:3000/api/status');
+    const data = await res.json();
+    if (statusEl && data.online) {
+      statusEl.className = 'bot-status online';
+      statusEl.innerHTML = '<span class="dot"></span> Online';
+    }
+  } catch(err) {
+    if (statusEl) {
+      statusEl.className = 'bot-status offline';
+      statusEl.innerHTML = '<span class="dot"></span> Offline';
+    }
+  }
+}, 30000);
 // Check bot status
 async function checkWeatherBotStatus() {
   try {
@@ -1160,10 +1205,4 @@ setInterval(checkWeatherBotStatus, 30000);
 });
 </script>
 </body>
-</html>-color:#3b82f6">
-          <div class="feature-icon">🗺️</div>
-          <h3 class="feature-title" style="color:#7dd3fc">Regional Selection</h3>
-          <p style="color:#bae6fd">Start by choosing West, Mid, or East Midwest region for focused results.</p>
-        </div>
-
-        <div class="feature-card" style="background:rgba(125,211,252,0.1);border
+</html>

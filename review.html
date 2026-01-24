@@ -1,0 +1,1533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Reviews | We Review More Than Just Roblox Games</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #0a0a0f;
+            --card-bg: rgba(15, 15, 25, 0.85);
+            --text: #e0e0e0;
+            --muted: #a0a0a0;
+            --neon: #b38cff;
+            --neon-bright: #d4b3ff;
+            --accent: #8e2de2;
+            --accent-dark: #4a00e0;
+            --border: rgba(179, 140, 255, 0.3);
+            --berkeley: #ff4444;
+            --erlc: #ff9500;
+            --positive: #4ecdc4;
+            --warning: #ff9500;
+            --critical: #ff4444;
+            --doors: #8e2de2;
+            --bloxfruits: #e74c3c;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        #matrix-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .back-to-main {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 12px 24px;
+            background: rgba(179, 140, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            color: var(--neon);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .back-to-main:hover {
+            background: rgba(179, 140, 255, 0.3);
+            transform: translateX(-5px);
+        }
+
+        .platform-tabs {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            background: rgba(15, 15, 25, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 10px;
+            border-radius: 50px;
+            border: 1px solid var(--border);
+            z-index: 1000;
+            flex-wrap: wrap;
+            max-width: 90%;
+            justify-content: center;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            border-radius: 30px;
+            color: var(--muted);
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .tab-btn.active {
+            background: var(--accent);
+            color: white;
+        }
+
+        .tab-btn:hover {
+            background: rgba(179, 140, 255, 0.2);
+            color: var(--neon);
+        }
+
+        .admin-trigger {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: rgba(179, 140, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .admin-trigger:hover {
+            background: rgba(179, 140, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 120px 20px 50px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .main-header {
+            text-align: center;
+            margin-bottom: 60px;
+            padding: 40px 20px;
+            background: rgba(179, 140, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .main-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--neon), var(--neon-bright));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .main-subtitle {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            color: var(--neon);
+            margin-bottom: 20px;
+        }
+
+        .main-description {
+            color: var(--muted);
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .reviews-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .review-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .review-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: var(--neon);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .review-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--neon);
+            box-shadow: 0 10px 30px rgba(179, 140, 255, 0.3);
+        }
+
+        .review-card:hover::before {
+            opacity: 1;
+        }
+
+        .review-card.critical::before {
+            background: var(--critical);
+        }
+
+        .review-card.warning::before {
+            background: var(--warning);
+        }
+
+        .review-card.positive::before {
+            background: var(--positive);
+        }
+
+        .review-status {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .status-critical {
+            background: rgba(255, 68, 68, 0.2);
+            color: var(--critical);
+            border: 1px solid var(--critical);
+        }
+
+        .status-warning {
+            background: rgba(255, 149, 0, 0.2);
+            color: var(--warning);
+            border: 1px solid var(--warning);
+        }
+
+        .status-positive {
+            background: rgba(78, 205, 196, 0.2);
+            color: var(--positive);
+            border: 1px solid var(--positive);
+        }
+
+        .review-game-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            color: var(--neon-bright);
+            margin-bottom: 10px;
+        }
+
+        .review-developer {
+            color: var(--muted);
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .review-category {
+            color: var(--neon);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .review-excerpt {
+            color: var(--text);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .review-rating {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .rating-number {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .critical-rating {
+            color: var(--critical);
+        }
+
+        .warning-rating {
+            color: var(--warning);
+        }
+
+        .positive-rating {
+            color: var(--positive);
+        }
+
+        .rating-label {
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .read-review-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .read-review-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(142, 45, 226, 0.4);
+        }
+
+        .review-page {
+            display: none;
+        }
+
+        .review-page.active {
+            display: block;
+        }
+
+        .page {
+            position: relative;
+            z-index: 1;
+        }
+
+        .back-to-home {
+            display: inline-block;
+            padding: 12px 24px;
+            background: rgba(179, 140, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            color: var(--neon);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-bottom: 30px;
+            cursor: pointer;
+            border: none;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .back-to-home:hover {
+            background: rgba(179, 140, 255, 0.3);
+            transform: translateX(-5px);
+        }
+
+        .section {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 40px;
+            border: 1px solid var(--border);
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            color: var(--neon-bright);
+            margin-bottom: 25px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 15px;
+        }
+
+        .subsection-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.4rem;
+            color: var(--neon);
+            margin: 30px 0 15px;
+        }
+
+        .berkeley-sub {
+            color: var(--berkeley);
+        }
+
+        .erlc-sub {
+            color: var(--erlc);
+        }
+
+        .doors-sub {
+            color: var(--doors);
+        }
+
+        .bloxfruits-sub {
+            color: var(--bloxfruits);
+        }
+
+        .executive-summary {
+            background: rgba(179, 140, 255, 0.08);
+            border-left: 4px solid var(--neon);
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .executive-summary.berkeley {
+            border-left-color: var(--berkeley);
+        }
+
+        .executive-summary.erlc {
+            border-left-color: var(--erlc);
+        }
+
+        .executive-summary.doors {
+            border-left-color: var(--doors);
+        }
+
+        .executive-summary.bloxfruits {
+            border-left-color: var(--bloxfruits);
+        }
+
+        .warning-box {
+            background: rgba(255, 149, 0, 0.1);
+            border: 2px solid var(--warning);
+            border-radius: 10px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+
+        .warning-box.berkeley {
+            background: rgba(255, 68, 68, 0.1);
+            border-color: var(--berkeley);
+        }
+
+        .warning-box.erlc {
+            background: rgba(255, 149, 0, 0.1);
+            border-color: var(--erlc);
+        }
+
+        .warning-box.doors {
+            background: rgba(78, 205, 196, 0.1);
+            border-color: var(--positive);
+        }
+
+        .warning-box.bloxfruits {
+            background: rgba(231, 76, 60, 0.1);
+            border-color: var(--bloxfruits);
+        }
+
+        .warning-box h3 {
+            font-family: 'Orbitron', sans-serif;
+            margin-bottom: 15px;
+        }
+
+        ul {
+            margin-left: 20px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        li {
+            margin-bottom: 10px;
+            color: var(--text);
+        }
+
+        strong {
+            color: var(--neon-bright);
+        }
+
+        .recommendation-box {
+            background: rgba(179, 140, 255, 0.08);
+            border-left: 4px solid var(--neon);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .recommendation-box h4 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--neon);
+            margin-bottom: 10px;
+        }
+
+        .rating-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .rating-item {
+            background: rgba(179, 140, 255, 0.08);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .rating-category {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            color: var(--muted);
+            margin-bottom: 10px;
+        }
+
+        .rating-score {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--neon);
+        }
+
+        .rating-score.berkeley {
+            color: var(--berkeley);
+        }
+
+        .rating-score.erlc {
+            color: var(--erlc);
+        }
+
+        .rating-score.doors {
+            color: var(--doors);
+        }
+
+        .rating-score.bloxfruits {
+            color: var(--bloxfruits);
+        }
+
+        .rating-total {
+            font-size: 1rem;
+            color: var(--muted);
+        }
+
+        .evidence-list {
+            margin-top: 20px;
+        }
+
+        .complaint-quote {
+            background: rgba(179, 140, 255, 0.08);
+            border-left: 3px solid var(--neon);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            font-style: italic;
+            color: var(--text);
+        }
+
+        .admin-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 3000;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .admin-modal.show {
+            display: block;
+        }
+
+        .admin-container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 40px;
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 68, 68, 0.2);
+            border: 1px solid var(--critical);
+            padding: 10px 20px;
+            border-radius: 10px;
+            color: var(--critical);
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 68, 68, 0.3);
+        }
+
+        .admin-input, .admin-textarea, .admin-select {
+            width: 100%;
+            padding: 12px;
+            margin-top: 5px;
+            background: rgba(179, 140, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .admin-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .admin-btn {
+            width: 100%;
+            padding: 12px;
+            margin-top: 15px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .admin-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(142, 45, 226, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 2.5rem;
+            }
+
+            .main-subtitle {
+                font-size: 1.2rem;
+            }
+
+            .reviews-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section {
+                padding: 25px;
+            }
+
+            .container {
+                padding-top: 180px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="matrix-canvas"></canvas>
+
+    <a href="https://customer-assets.emergentagent.com/" class="back-to-main">← Back to Main Site</a>
+    
+    <div class="platform-tabs">
+        <button class="tab-btn active">🎮 Roblox Games</button>
+        <button class="tab-btn">🚗 FiveM Servers</button>
+        <button class="tab-btn">🎯 Call of Duty</button>
+        <button class="tab-btn">🏗️ Fortnite</button>
+        <button class="tab-btn">⏳ Pending Reviews</button>
+    </div>
+    
+    <div class="admin-trigger">🔐</div>
+    
+    <!-- ADMIN LOGIN MODAL -->
+    <div id="adminLoginModal" class="admin-modal">
+        <div class="admin-container">
+            <button class="close-btn" onclick="closeAdminLogin()">✕ Close</button>
+            <h2 style="color: #4ecdc4; margin-bottom: 30px; clear: both;">🔐 Admin Login</h2>
+            
+            <div id="loginStep">
+                <input type="email" id="adminEmail" class="admin-input" placeholder="Email Address" value="tannerkurrasch@gmail.com" readonly>
+                <input type="password" id="adminPassword" class="admin-input" placeholder="Password">
+                <button class="admin-btn" onclick="continueToTwoFactor()">Continue to 2FA</button>
+                <p style="color: #ff6b6b; margin-top: 10px; display: none;" id="loginError"></p>
+            </div>
+    
+            <div id="twoFactorStep" style="display: none;">
+                <p style="color: #4ecdc4; margin-bottom: 20px;">Enter your 6-digit code from Google Authenticator or Microsoft Authenticator:</p>
+                <input type="text" id="twoFactorCode" class="admin-input" placeholder="000000" maxlength="6" pattern="[0-9]{6}">
+                <button class="admin-btn" onclick="verifyAndLogin()">Verify & Login</button>
+                <button class="admin-btn" style="background: #888;" onclick="backToLogin()">← Back</button>
+                <p style="color: #ff6b6b; margin-top: 10px; display: none;" id="twoFactorError"></p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- ADMIN PANEL -->
+    <div id="adminPanel" class="admin-modal">
+        <div class="admin-container">
+            <button class="close-btn" onclick="logoutAdmin()">Logout</button>
+            <h2 style="color: #4ecdc4; margin-bottom: 30px; clear: both;">⚙️ Admin Panel - Create Review</h2>
+            
+            <label style="color: #fff; display: block; margin-top: 20px;">Game/Server Title:</label>
+            <input type="text" id="reviewTitle" class="admin-input" placeholder="Enter title">
+            
+            <label style="color: #fff; display: block; margin-top: 15px;">Developer/Creator:</label>
+            <input type="text" id="reviewDeveloper" class="admin-input" placeholder="Enter developer">
+            
+            <label style="color: #fff; display: block; margin-top: 15px;">Platform:</label>
+            <select id="reviewPlatform" class="admin-select">
+                <option value="roblox">🎮 Roblox</option>
+                <option value="fivem">🚗 FiveM</option>
+                <option value="cod">🎯 Call of Duty</option>
+                <option value="fortnite">🏗️ Fortnite</option>
+            </select>
+            
+            <label style="color: #fff; display: block; margin-top: 15px;">Category:</label>
+            <input type="text" id="reviewCategory" class="admin-input" placeholder="e.g., FPS / Roleplay / RPG">
+            
+            <label style="color: #fff; display: block; margin-top: 15px;">Game/Server Link (optional):</label>
+            <input type="url" id="reviewLink" class="admin-input" placeholder="https://...">
+            
+            <label style="color: #fff; display: block; margin-top: 15px;">
+                <input type="checkbox" id="verifiedDev" style="margin-right: 10px;">
+                Verified Developer ✓
+            </label>
+            
+            <label style="color: #fff; display: block; margin-top: 15px;">Status:</label>
+            <select id="reviewStatus" class="admin-select">
+                <option value="positive">✅ Recommended</option>
+                <option value="warning">⚠ Player Advisory</option>
+                <option value="critical">❌ Not Recommended</option>
+            </select>
+            
+            <label style="color: #fff; display: block; margin-top: 15px;">Rating (0-10):</label>
+            <input type="number" id="reviewRating" class="admin-input" placeholder="7.5" min="0" max="10" step="0.1">
+            
+            <label style="color: #fff; display: block; margin-top: 15px;">Short Description (for card):</label>
+            <textarea id="reviewExcerpt" class="admin-textarea" placeholder="Brief description..."></textarea>
+            
+            <label style="color: #fff; display: block; margin-top: 15px;">Auto-Publish Delay (hours):</label>
+            <input type="number" id="publishDelay" class="admin-input" placeholder="2" min="1" max="168" value="2">
+            
+            <button class="admin-btn" onclick="createReview()">Create Review (Will Auto-Publish)</button>
+            
+            <h3 style="color: #4ecdc4; margin-top: 40px;">Pending Reviews:</h3>
+            <div id="pendingReviewsAdmin" style="color: var(--muted); margin-top: 10px;">No pending reviews</div>
+        </div>
+    </div>
+
+    <!-- HOME PAGE -->
+    <div id="homePage" class="page">
+        <div class="container">
+            <div class="main-header">
+                <h1 class="main-title">Nexus Reviews</h1>
+                <h2 class="main-subtitle">We Review More Than Just Roblox Games</h2>
+                <p class="main-description">
+                    Your trusted source for in-depth, unbiased game reviews. We provide comprehensive analysis of gameplay, moderation, community health, and player experience across Roblox and beyond.
+                </p>
+            </div>
+
+            <div class="reviews-grid">
+                <div class="review-card critical">
+                    <span class="review-status status-critical">⚠ Community Alert</span>
+                    <h3 class="review-game-title">Berkeley County</h3>
+                    <p class="review-developer">Developer: Five-O Digital</p>
+                    <p class="review-category">Law Enforcement Roleplay | Roblox</p>
+                    <p class="review-excerpt">
+                        Once a promising LEO roleplay experience, Berkeley County has experienced catastrophic decline. Rampant cop-baiting, CCO exploitation, and administrative abandonment have made the game unplayable.
+                    </p>
+                    <div class="review-rating">
+                        <span class="rating-number critical-rating">1.2</span>
+                        <span class="rating-label">/10<br>Avoid Until Fixed</span>
+                    </div>
+                    <button class="read-review-btn" onclick="showReview('berkeleyReview')">Read Full Review</button>
+                </div>
+
+                <div class="review-card warning">
+                    <span class="review-status status-warning">⚠ Player Advisory</span>
+                    <h3 class="review-game-title">Emergency Response: Liberty County</h3>
+                    <p class="review-developer">Developer: PlayDemic / PRC</p>
+                    <p class="review-category">Law Enforcement & Civilian Roleplay | Roblox</p>
+                    <p class="review-excerpt">
+                        ERLC remains popular but suffers from aggressive pay-to-win mechanics, severe imbalance, and inconsistent moderation. Veterans are leaving as monetization takes priority.
+                    </p>
+                    <div class="review-rating">
+                        <span class="rating-number warning-rating">4.0</span>
+                        <span class="rating-label">/10<br>Proceed With Caution</span>
+                    </div>
+                    <button class="read-review-btn" onclick="showReview('erlcReview')">Read Full Review</button>
+                </div>
+
+                <div class="review-card warning">
+                    <span class="review-status status-warning">⚠ Player Advisory</span>
+                    <h3 class="review-game-title">Tower Defense Simulator</h3>
+                    <p class="review-developer">Developer: Paradoxum Games</p>
+                    <p class="review-category">Tower Defense / Cooperative Strategy | Roblox</p>
+                    <p class="review-excerpt">
+                        Once beloved, TDS now suffers from extreme grinding, aggressive monetization, severe balance issues, and toxic community behavior.
+                    </p>
+                    <div class="review-rating">
+                        <span class="rating-number warning-rating">5.5</span>
+                        <span class="rating-label">/10<br>Mixed Experience</span>
+                    </div>
+                    <button class="read-review-btn">Read Full Review</button>
+                </div>
+                
+                <div class="review-card warning">
+                    <span class="review-status status-warning">⚠ Player Advisory</span>
+                    <h3 class="review-game-title">Bridge Battles!</h3>
+                    <p class="review-developer">Developer: STUDMASTER</p>
+                    <p class="review-category">Building / PvP / Team Objective | Roblox</p>
+                    <p class="review-excerpt">
+                        Fun build-versus-destroy mechanics but suffers from balance issues and griefing.
+                    </p>
+                    <div class="review-rating">
+                        <span class="rating-number warning-rating">6.0</span>
+                        <span class="rating-label">/10<br>Coordination Required</span>
+                    </div>
+                    <button class="read-review-btn">Read Full Review</button>
+                </div>
+                
+                <div class="review-card warning">
+                    <span class="review-status status-warning">⚠ Player Advisory</span>
+                    <h3 class="review-game-title">Conquer The World WW2</h3>
+                    <p class="review-developer">Developer: Marian_Dev</p>
+                    <p class="review-category">Strategy / War Simulation | Roblox</p>
+                    <p class="review-excerpt">
+                        Ambitious grand strategy with steep learning curve and pay-to-progress elements.
+                    </p>
+                    <div class="review-rating">
+                        <span class="rating-number warning-rating">6.8</span>
+                        <span class="rating-label">/10<br>Not for Casuals</span>
+                    </div>
+                    <button class="read-review-btn">Read Full Review</button>
+                </div>
+                
+                <div class="review-card warning">
+                    <span class="review-status status-warning">⚠ Player Advisory</span>
+                    <h3 class="review-game-title">Bid Battles!</h3>
+                    <p class="review-developer">Developer: Absolute Zero!</p>
+                    <p class="review-category">Auction / Tycoon / Social | Roblox</p>
+                    <p class="review-excerpt">
+                        Engaging auction gameplay with serious trust and scamming concerns.
+                    </p>
+                    <div class="review-rating">
+                        <span class="rating-number warning-rating">6.0</span>
+                        <span class="rating-label">/10<br>Trade Carefully</span>
+                    </div>
+                    <button class="read-review-btn">Read Full Review</button>
+                </div>
+
+                <div class="review-card positive">
+                    <span class="review-status status-positive">✅ Recommended</span>
+                    <h3 class="review-game-title">Car Crushers 2 <span style="color: #0066ff;">✓</span></h3>
+                    <p class="review-developer">Developer: Panwellz / Car Crushers Community</p>
+                    <p class="review-category">Physics Sim / Destruction Sandbox | Roblox</p>
+                    <p class="review-excerpt">
+                        Premium destruction physics with 400+ vehicles and verified developer. Minor P2W concerns.
+                    </p>
+                    <div class="review-rating">
+                        <span class="rating-number positive-rating">7.8</span>
+                        <span class="rating-label">/10<br>Solid Experience</span>
+                    </div>
+                    <button class="read-review-btn">Read Full Review</button>
+                </div>
+
+                <div class="review-card positive">
+                    <span class="review-status status-positive">✅ Recommended</span>
+                    <h3 class="review-game-title">My Prison</h3>
+                    <p class="review-developer">Developer: Windburst</p>
+                    <p class="review-category">Management / Tycoon / Building Sim | Roblox</p>
+                    <p class="review-excerpt">
+                        Deep prison management with active gameplay. Beta status with some bugs but solid foundation.
+                    </p>
+                    <div class="review-rating">
+                        <span class="rating-number positive-rating">7.0</span>
+                        <span class="rating-label">/10<br>Solid Tycoon</span>
+                    </div>
+                    <button class="read-review-btn">Read Full Review</button>
+                </div>
+
+                <div class="review-card positive">
+                    <span class="review-status status-positive">✅ Highly Recommended</span>
+                    <h3 class="review-game-title">Theme Park Tycoon 2</h3>
+                    <p class="review-developer">Developer: Den_S</p>
+                    <p class="review-category">Building Sim / Tycoon / Creative Sandbox | Roblox</p>
+                    <p class="review-excerpt">
+                        The gold standard for creative building on Roblox. 13 years of excellence with fair monetization.
+                    </p>
+                    <div class="review-rating">
+                        <span class="rating-number positive-rating">9.0</span>
+                        <span class="rating-label">/10<br>Legendary Classic</span>
+                    </div>
+                    <button class="read-review-btn">Read Full Review</button>
+                </div>
+
+                <div class="review-card positive">
+                    <span class="review-status status-positive">✅ Highly Recommended</span>
+                    <h3 class="review-game-title">🚒 First Responders: Coastal Heat 🌴</h3>
+                    <p class="review-developer">Developer: Rengate / Gate Studios</p>
+                    <p class="review-category">Emergency Roleplay / Firefighting / EMS | Roblox</p>
+                    <p class="review-excerpt">
+                        Best firefighting roleplay on Roblox. Weekend-free policy and realistic mechanics.
+                    </p>
+                    <div class="review-rating">
+                        <span class="rating-number positive-rating">8.5</span>
+                        <span class="rating-label">/10<br>Emergency Excellence</span>
+                    </div>
+                    <button class="read-review-btn">Read Full Review</button>
+                </div>
+
+                <div class="review-card critical">
+                    <span class="review-status status-critical">❌ Not Recommended</span>
+                    <h3 class="review-game-title">The Rookie ROBLOX - Alpha</h3>
+                    <p class="review-developer">Developer: chloeeispro</p>
+                    <p class="review-category">Police Roleplay / Alpha | Roblox</p>
+                    <p class="review-excerpt">
+                        Pay-to-win Detective gamepass undermines fair progression. Limited alpha content.
+                    </p>
+                    <div class="review-rating">
+                        <span class="rating-number critical-rating">3.5</span>
+                        <span class="rating-label">/10<br>Needs Major Work</span>
+                    </div>
+                    <button class="read-review-btn">Read Full Review</button>
+                </div>
+
+                <div class="review-card positive">
+                    <span class="review-status status-positive">✅ Recommended</span>
+                    <h3 class="review-game-title">Battle Ages ✓</h3>
+                    <p class="review-developer">Developer: Ming Media</p>
+                    <p class="review-category">Strategy / Wave-Based Combat | Roblox</p>
+                    <p class="review-excerpt">
+                        Era-based progression with strategic combat. Verified developer backing and fair monetization.
+                    </p>
+                    <div class="review-rating">
+                        <span class="rating-number positive-rating">7.0</span>
+                        <span class="rating-label">/10<br>Solid Strategy</span>
+                    </div>
+                    <button class="read-review-btn">Read Full Review</button>
+                </div>
+
+                <div class="review-card positive">
+                    <span class="review-status status-positive">✅ Highly Recommended</span>
+                    <h3 class="review-game-title">Arsenal ✓</h3>
+                    <p class="review-developer">Developer: ROLVe Community</p>
+                    <p class="review-category">FPS / Fast-Paced Shooter | Roblox</p>
+                    <p class="review-excerpt">
+                        One of Roblox's best shooters. Polished gunplay, fair monetization, 6+ billion visits.
+                    </p>
+                    <div class="review-rating">
+                        <span class="rating-number positive-rating">9.0</span>
+                        <span class="rating-label">/10<br>Essential FPS</span>
+                    </div>
+                    <button class="read-review-btn">Read Full Review</button>
+                </div>
+
+                <div class="review-card positive">
+                    <span class="review-status status-positive">✅ Recommended (For Grinders)</span>
+                    <h3 class="review-game-title">Blox Fruits ✓</h3>
+                    <p class="review-developer">Developer: Gamer Robot Inc</p>
+                    <p class="review-category">RPG / Action / Grinding | Roblox</p>
+                    <p class="review-excerpt">
+                        Massive One Piece-inspired RPG. 50+ billion visits, extreme grind, not for casuals.
+                    </p>
+                    <div class="review-rating">
+                        <span class="rating-number positive-rating">8.0</span>
+                        <span class="rating-label">/10<br>Grinder's Paradise</span>
+                    </div>
+                    <button class="read-review-btn" onclick="showReview('bloxfruitsReview')">Read Full Review</button>
+                </div>
+
+                <div class="review-card positive">
+                    <span class="review-status status-positive">✅ Highly Recommended</span>
+                    <h3 class="review-game-title">👁️ Doors</h3>
+                    <p class="review-developer">Developer: LSPLASH</p>
+                    <p class="review-category">Horror / Puzzle / Co-op | Roblox</p>
+                    <p class="review-excerpt">
+                        Landmark horror experience with exceptional audio design. Fair monetization, high replay value.
+                    </p>
+                    <div class="review-rating">
+                        <span class="rating-number positive-rating">9.5</span>
+                        <span class="rating-label">/10<br>Horror Excellence</span>
+                    </div>
+                    <button class="read-review-btn" onclick="showReview('doorsReview')">Read Full Review</button>
+                </div>
+
+                <div class="review-card" style="opacity: 0.4; cursor: default; border-left: 5px solid #4ecdc4;">
+                    <span class="review-status" style="background: rgba(78, 205, 196, 0.3);">Coming Soon</span>
+                    <h3 class="review-game-title">More Reviews Coming</h3>
+                    <p class="review-developer">Stay Tuned</p>
+                    <p class="review-category">Multiple Platforms</p>
+                    <p class="review-excerpt">We're actively reviewing more games.</p>
+                    <div class="review-rating">
+                        <span class="rating-number" style="color: #4ecdc4;">?</span>
+                        <span class="rating-label">/10<br>In Progress</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BERKELEY COUNTY FULL REVIEW -->
+    <div id="berkeleyReview" class="review-page container">
+        <button class="back-to-home" onclick="backToHome()">⬅ Back to Nexus Reviews</button>
+
+        <div class="section">
+            <h2 class="section-title">Berkeley County Review</h2>
+            <div class="executive-summary berkeley">
+                <p>Berkeley County was once regarded as a promising law enforcement roleplay experience on Roblox, attracting dedicated players who valued structured gameplay and authentic roleplay scenarios. However, the game has experienced a catastrophic decline in quality that has driven away its core player base and created an environment that many veterans now describe as completely unplayable.</p>
+                
+                <p>The primary issues plaguing Berkeley County include <strong>rampant cop-baiting that occurs virtually non-stop</strong>, abuse of the Concorded Criminal Organization (CCO) system that allows coordinated groups to overwhelm servers, and a near-total absence of administrative oversight. Reports of exploiters, harassment, and rule violations go unaddressed for weeks or months. Longtime community members are abandoning the game in significant numbers, with entire waves of players quitting during peak hours. <strong>The Nexus Review Hub strongly recommends avoiding Berkeley County</strong> until Five-O Digital implements substantial reforms to address moderation failures, game balance issues, and the toxic player behavior that now defines the experience.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Critical Issues Analysis</h2>
+
+            <h3 class="subsection-title berkeley-sub">The Cop-Baiting Epidemic</h3>
+            <p>Berkeley County has become overrun with players whose sole objective is to harass and provoke law enforcement officers rather than engage in meaningful roleplay. This behavior has transformed the game from a structured roleplay environment into a chaos simulator.</p>
+            
+            <ul>
+                <li><strong>Constant provocation:</strong> Players intentionally commit crimes directly in front of officers, use vehicles to block police cruisers, and engage in verbal harassment designed solely to trigger pursuits and confrontations.</li>
+                <li><strong>Destruction of roleplay:</strong> Legitimate players attempting to engage in traffic stops, investigations, or patrol duties find their sessions immediately derailed by individuals seeking to create disruption rather than participate in scenarios.</li>
+                <li><strong>Widespread documentation:</strong> Numerous videos across multiple platforms show this behavior occurring continuously across different servers, indicating this is not an isolated problem but a systemic failure of game design and moderation.</li>
+                <li><strong>No consequences:</strong> Despite clear violations of intended gameplay mechanics, cop-baiters face minimal to no repercussions, encouraging the behavior to proliferate.</li>
+            </ul>
+
+            <h3 class="subsection-title berkeley-sub">CCO System Exploitation and Server Domination</h3>
+            <p>The Concorded Criminal Organization feature was intended to add organized crime roleplay to Berkeley County. Instead, it has become the most destructive element in the game, allowing coordinated groups to completely destabilize servers.</p>
+            
+            <ul>
+                <li><strong>Leveling attacks:</strong> CCO groups organize mass raids on servers where dozens of armed members simultaneously attack law enforcement, creating situations that are impossible to manage through normal gameplay mechanics.</li>
+                <li><strong>Weapon and equipment imbalance:</strong> CCO members have access to tools, firearms, and abilities that dramatically exceed what law enforcement or civilian players can counter.</li>
+                <li><strong>Server clearing:</strong> When CCO attacks begin, regular players often immediately leave the server. Entire servers can empty within minutes of a coordinated CCO action.</li>
+                <li><strong>Community demands for removal:</strong> A substantial portion of the player base has called for CCO to be completely removed or fundamentally redesigned.</li>
+            </ul>
+
+            <h3 class="subsection-title berkeley-sub">Administrative Neglect and Staff Absence</h3>
+            <p>Perhaps the most damaging aspect of Berkeley County's decline is the apparent abandonment of the game by its moderation team and developer.</p>
+            
+            <ul>
+                <li><strong>Ignored reports:</strong> Players filing reports describe waiting weeks without any response or action taken.</li>
+                <li><strong>Invisible staff presence:</strong> Active moderators or administrators are rarely observed in-game.</li>
+                <li><strong>Exploiter haven:</strong> The lack of active moderation has allowed exploiters to operate freely.</li>
+                <li><strong>Developer silence:</strong> Five-O Digital has not meaningfully engaged with community feedback regarding these issues.</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Consumer Warning</h2>
+            <div class="warning-box berkeley">
+                <h3>⚠ CONSUMER WARNING FOR NEXUS READERS</h3>
+                
+                <p><strong>The Nexus Review Hub strongly advises against playing Berkeley County in its current state.</strong></p>
+                
+                <p><strong>If you choose to play Berkeley County, you should expect:</strong></p>
+                <ul>
+                    <li>Constant harassment through cop-baiting and disruptive player behavior</li>
+                    <li>Unfair gameplay due to CCO exploitation and game balance failures</li>
+                    <li>No administrative support when reporting violations or seeking help</li>
+                    <li>Technical problems including lag, crashes, and exploit abuse</li>
+                    <li>Time investment that will likely result in disappointment</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Nexus Review Scores</h2>
+            
+            <div class="rating-grid">
+                <div class="rating-item">
+                    <div class="rating-category">Playability</div>
+                    <div class="rating-score berkeley">1.5<span class="rating-total">/10</span></div>
+                </div>
+                <div class="rating-item">
+                    <div class="rating-category">Moderation Quality</div>
+                    <div class="rating-score berkeley">0.5<span class="rating-total">/10</span></div>
+                </div>
+                <div class="rating-item">
+                    <div class="rating-category">Fairness</div>
+                    <div class="rating-score berkeley">1.0<span class="rating-total">/10</span></div>
+                </div>
+                <div class="rating-item">
+                    <div class="rating-category">Stability</div>
+                    <div class="rating-score berkeley">2.0<span class="rating-total">/10</span></div>
+                </div>
+                <div class="rating-item">
+                    <div class="rating-category">Overall Enjoyment</div>
+                    <div class="rating-score berkeley">1.0<span class="rating-total">/10</span></div>
+                </div>
+            </div>
+            
+            <p style="margin-top: 30px; text-align: center; font-size: 1.3em;"><strong>Overall Rating: 1.2/10 — Avoid Until Major Reforms Are Implemented</strong></p>
+        </div>
+    </div>
+
+    <!-- ERLC REVIEW -->
+    <div id="erlcReview" class="review-page container">
+        <button class="back-to-home" onclick="backToHome()">⬅ Back to Nexus Reviews</button>
+        
+        <div class="section">
+            <h2 class="section-title">Emergency Response: Liberty County Review</h2>
+            <div class="executive-summary erlc">
+                <p>Emergency Response: Liberty County (ERLC) stands as one of Roblox's most recognizable and established law enforcement roleplay experiences, boasting a substantial player base and years of development. The game offers a comprehensive framework for police, fire, medical, and civilian roleplay with an expansive map and diverse gameplay opportunities. However, recent updates combined with longstanding administrative decisions have generated significant frustration within the community.</p>
+                
+                <p>Major reported issues plaguing ERLC include <strong>aggressive pay-to-win mechanics that lock competitive advantages behind substantial Robux purchases</strong>, severe gameplay imbalance between law enforcement and criminal factions, widespread harassment through spawn camping and targeted griefing, inconsistent administrative enforcement, and punishing grind requirements. <strong>The Nexus Review Hub advises potential players to carefully consider these significant problems before investing time or Robux into ERLC</strong>.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Critical Issues Analysis</h2>
+
+            <h3 class="subsection-title erlc-sub">Pay-to-Win Progression System</h3>
+            <p>One of the most contentious aspects of ERLC's current state is its aggressive monetization structure that creates significant competitive advantages for players willing to spend Robux.</p>
+            
+            <ul>
+                <li><strong>Essential features locked behind gamepasses:</strong> Many tools, vehicles, and gameplay capabilities that significantly impact effectiveness are only available through expensive Robux purchases.</li>
+                <li><strong>Vehicle performance disparities:</strong> Premium vehicles purchased with Robux often have superior speed, handling, and durability compared to earned alternatives.</li>
+                <li><strong>Forced spending perception:</strong> New players consistently report feeling pressured to spend money simply to remain competitive.</li>
+                <li><strong>Monetization-focused development:</strong> Recent updates appear to prioritize adding new purchasable content over addressing gameplay balance.</li>
+            </ul>
+
+            <h3 class="subsection-title erlc-sub">Severe Gameplay Imbalance Issues</h3>
+            <p>ERLC suffers from fundamental balance problems between its law enforcement and criminal gameplay systems.</p>
+            
+            <ul>
+                <li><strong>Criminal tool superiority:</strong> Criminal players have access to weapons and equipment that often exceed what law enforcement can effectively counter.</li>
+                <li><strong>Coordinated attack vulnerability:</strong> When multiple criminals coordinate attacks, police players often lack the tools necessary to mount effective responses.</li>
+                <li><strong>Law enforcement frustration:</strong> Police players report extreme difficulty completing basic roleplay tasks during peak hours.</li>
+                <li><strong>Server chaos during peak times:</strong> High-population periods often devolve into complete anarchy where structured roleplay becomes impossible.</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Consumer Advisory</h2>
+            <div class="warning-box erlc">
+                <h3>⚠ CONSUMER ADVISORY FOR NEXUS READERS</h3>
+                
+                <p><strong>The Nexus Review Hub advises potential players to carefully consider ERLC's significant problems before investing time or Robux.</strong></p>
+                
+                <p><strong>Potential players should be aware of the following:</strong></p>
+                <ul>
+                    <li>Essential features locked behind expensive gamepasses create pay-to-win environment</li>
+                    <li>Severe imbalance between criminal and law enforcement gameplay</li>
+                    <li>Inconsistent administrative enforcement and moderation</li>
+                    <li>Punishing grind requirements for free-to-play progression</li>
+                    <li>Widespread harassment through spawn camping and targeted griefing</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Nexus Review Scores</h2>
+            
+            <div class="rating-grid">
+                <div class="rating-item">
+                    <div class="rating-category">Gameplay Balance</div>
+                    <div class="rating-score erlc">3.0<span class="rating-total">/10</span></div>
+                </div>
+                <div class="rating-item">
+                    <div class="rating-category">Monetization Fairness</div>
+                    <div class="rating-score erlc">2.5<span class="rating-total">/10</span></div>
+                </div>
+                <div class="rating-item">
+                    <div class="rating-category">Moderation Quality</div>
+                    <div class="rating-score erlc">3.5<span class="rating-total">/10</span></div>
+                </div>
+                <div class="rating-item">
+                    <div class="rating-category">Community Health</div>
+                    <div class="rating-score erlc">4.0<span class="rating-total">/10</span></div>
+                </div>
+                <div class="rating-item">
+                    <div class="rating-category">Overall Experience</div>
+                    <div class="rating-score erlc">4.0<span class="rating-total">/10</span></div>
+                </div>
+            </div>
+            
+            <p style="margin-top: 30px; text-align: center; font-size: 1.3em;"><strong>Overall Rating: 4.0/10 — Proceed With Caution</strong></p>
+        </div>
+    </div>
+
+    <!-- DOORS REVIEW -->
+    <div id="doorsReview" class="review-page container">
+        <button class="back-to-home" onclick="backToHome()">⬅ Back to Nexus Reviews</button>
+        
+        <div class="section">
+            <h2 class="section-title">Doors Review</h2>
+            <div class="executive-summary doors">
+                <p>Doors 👁️ (stylized in all upper-case and with an eye emoji) is a first-person horror experience created by Lightning_Splash and RediblesQW with additional help by Ghostly_Wowzers and jasper_creations, released on August 10, 2022. The game was published under the group LSPLASH. DOORS is currently on Floor 1 (Hotel) and Floor 2 (Mines) and has three subfloors: The Rooms, The Backdoor, and The Outdoors. A third main floor is also in development.</p>
+                
+                <p>The experience won the "Best Horror" category in the Roblox Innovation Awards 2024. The concept of DOORS is inspired by a similar experience, Rooms, by nicorocks5555, an experience where users go through infinite doors hiding in lockers to survive from the entities. It is also inspired by the indie horror game Spooky's Jump Scare Mansion.</p>
+                
+                <p><strong>The Nexus Review Hub highly recommends Doors as one of Roblox's best horror experiences and essential gaming for horror fans.</strong> The game delivers exceptional atmosphere, excellent audio design, high replayability, and completely fair monetization with zero pay-to-win elements.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Critical Analysis</h2>
+
+            <h3 class="subsection-title doors-sub">Exceptional Atmosphere and Horror Design</h3>
+            <p>Doors creates genuinely unsettling horror through environmental storytelling and tension-building mechanics.</p>
+            
+            <ul>
+                <li><strong>Audio-driven horror:</strong> DOORS doesn't have many visual cues because LSPLASH wants to focus on audio cues, creating immersive sound-based terror.</li>
+                <li><strong>Environmental tension:</strong> Procedurally generated rooms maintain unpredictability while establishing foreboding atmosphere through lighting, sound design, and visual detail.</li>
+                <li><strong>Psychological horror:</strong> The game relies on anticipation, careful listening, and strategic decision-making rather than cheap jumpscares.</li>
+                <li><strong>Varied entity design:</strong> Each monster follows unique rules and behaviors that players must learn through observation and experimentation.</li>
+            </ul>
+
+            <h3 class="subsection-title doors-sub">Completely Fair Monetization</h3>
+            <p>Doors stands out for remarkably ethical monetization that prioritizes player experience over revenue extraction.</p>
+            
+            <ul>
+                <li><strong>No pay-to-win elements:</strong> The game contains zero gameplay advantages purchasable with Robux, maintaining completely fair competitive environment.</li>
+                <li><strong>Free revives for group members:</strong> Join the LSPLASH group for a free Revive, providing gameplay benefit without requiring purchases.</li>
+                <li><strong>Optional cosmetic UGC:</strong> Buy and wear their UGC for some Knobs and a Revive—cosmetic items that provide minor convenience without affecting core gameplay balance.</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Consumer Advisory</h2>
+            <div class="warning-box doors">
+                <h3>✅ HIGHLY RECOMMENDED — ONE OF ROBLOX'S BEST HORROR EXPERIENCES</h3>
+                
+                <p><strong>Doors delivers exceptional horror atmosphere, excellent audio design, high replayability, and completely fair monetization that makes it essential gaming for horror fans.</strong></p>
+                
+                <p><strong>Potential players should be aware of the following:</strong></p>
+                <ul>
+                    <li>This is one of the most polished and well-designed horror games on Roblox with industry-quality production</li>
+                    <li>Monetization is completely fair with zero pay-to-win elements</li>
+                    <li>The game intentionally teaches through trial-and-error rather than explicit tutorials</li>
+                    <li>Headphones and max graphics are strongly recommended for the intended experience</li>
+                    <li>Join the LSPLASH group for a free revive before your first run</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Nexus Review Scores</h2>
+            
+            <div class="rating-grid">
+                <div class="rating-item">
+                    <div class="rating-category">Atmosphere & Horror</div>
+                    <div class="rating-score doors">10.0<span class="rating-total">/10</span></div>
+                </div>
+                <div class="rating-item">
+                    <div class="rating-category">Audio Quality</div>
+                    <div class="rating-score doors">10.0<span class="rating-total">/10</span></div>
+                </div>
+                <div class="rating-item">
+                    <div class="rating-category">Replayability</div>
+                    <div class="rating-score doors">9.5<span class="rating-total">/10</span></div>
+                </div>
+                <div class="rating-item">
+                    <div class="rating-category">Monetization Fairness</div>
+                    <div class="rating-score doors">10.0<span class="rating-total">/10</span></div>
+                </div>
+                <div class="rating-item">
+                    <div class="rating-category">Overall Experience</div>
+                    <div class="rating-score doors">9.5<span class="rating-total">/10</span></div>
+                </div>
+            </div>
+            
+            <p style="margin-top: 30px; text-align: center; font-size: 1.3em;"><strong>Overall Rating: 9.5/10 — Highly Recommended: Horror Excellence</strong></p>
+        </div>
+    </div>
+
+    <!-- BLOX FRUITS REVIEW -->
+    <div id="bloxfruitsReview" class="review-page container">
+        <button class="back-to-home" onclick="backToHome()">⬅ Back to Nexus Reviews</button>
+        
+        <div class="section">
+            <h2 class="section-title">Blox Fruits Review</h2>
+            <div class="executive-summary bloxfruits">
+                <p>Blox Fruits is Roblox's most successful hardcore grinding RPG with over 50 billion visits and 200,000+ concurrent players. Developed by Gamer Robot Inc, this One Piece-inspired adventure offers exceptional content depth with 2800 level cap, 40 unique Devil Fruits, three seas of islands, extensive boss encounters, and mastery progression providing hundreds of hours of meaningful advancement.</p>
+                
+                <p>However, the game demands extreme time investment unsuitable for casual gaming. The grinding requirements are immense, free-to-play progression feels deliberately slow creating pressure toward purchasing 2x XP gamepasses, PvP lacks matchmaking allowing high-level harassment of newcomers, and fruit balance issues persist with clear tier hierarchies.</p>
+                
+                <p><strong>The Nexus Review Hub recommends Blox Fruits for players seeking deep, long-term RPG progression with massive content depth, but strongly advises casual players to recognize the extreme time investment demands before starting.</strong></p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Critical Analysis</h2>
+
+            <h3 class="subsection-title bloxfruits-sub">Exceptional Content Depth</h3>
+            <p>Blox Fruits offers staggering amounts of content and progression systems.</p>
+            
+            <ul>
+                <li><strong>Massive level cap:</strong> 2800 level progression system with three seas of content spanning hundreds of islands and locations.</li>
+                <li><strong>40+ unique Devil Fruits:</strong> Extensive fruit system with awakenings, masteries, and strategic build customization.</li>
+                <li><strong>Weekly updates:</strong> Starting July 2025, consistent content additions and improvements demonstrate ongoing developer commitment.</li>
+                <li><strong>Verified developer backing:</strong> Gamer Robot Inc's verified status provides confidence in long-term support and fair practices.</li>
+            </ul>
+
+            <h3 class="subsection-title bloxfruits-sub">Extreme Grinding Requirements</h3>
+            <p>The progression demands are punishing even by RPG standards.</p>
+            
+            <ul>
+                <li><strong>Hundreds of hours required:</strong> Reaching endgame content and max level demands months of multi-hour daily sessions.</li>
+                <li><strong>Slow free-to-play progression:</strong> Without 2x XP gamepasses, advancement feels deliberately throttled creating pressure toward Robux spending.</li>
+                <li><strong>RNG-dependent fruit acquisition:</strong> Obtaining specific fruits relies heavily on random chance despite extensive grinding.</li>
+                <li><strong>Not for casuals:</strong> The game explicitly targets hardcore grinding enthusiasts rather than casual players.</li>
+            </ul>
+
+            <h3 class="subsection-title bloxfruits-sub">PvP Balance Issues</h3>
+            <p>The player-versus-player systems create significant problems for new players.</p>
+            
+            <ul>
+                <li><strong>No matchmaking:</strong> Absence of level-based bracketing allows max-level players to dominate newcomers without consequence.</li>
+                <li><strong>Fruit tier disparities:</strong> Clear hierarchies exist where certain fruits dominate while others remain nearly unusable in competitive scenarios.</li>
+                <li><strong>High-level griefing:</strong> New player harassment occurs frequently without protection systems or safe zones.</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Consumer Advisory</h2>
+            <div class="warning-box bloxfruits">
+                <h3>✅ RECOMMENDED FOR GRINDING ENTHUSIASTS — NOT FOR CASUAL PLAYERS</h3>
+                
+                <p><strong>Blox Fruits delivers exceptional depth and content for players seeking long-term RPG progression, but demands extreme time investment unsuitable for casual gaming.</strong></p>
+                
+                <p><strong>Potential players should be aware of the following:</strong></p>
+                <ul>
+                    <li>This game requires hundreds of hours of grinding to reach endgame content and max level</li>
+                    <li>Progression is extremely slow without 2x XP gamepasses, creating pressure toward Robux spending</li>
+                    <li>PvP is severely imbalanced with no level-based matchmaking or low-level player protection</li>
+                    <li>The game is best suited for dedicated players willing to invest months of daily multi-hour sessions</li>
+                    <li>One Piece fans will appreciate the authentic Devil Fruit and series-inspired elements</li>
+                    <li>Weekly updates starting July 2025 provide consistent new content and improvements</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Nexus Review Scores</h2>
+            
+            <div class="rating-grid">
+                <div class="rating-item">
+                    <div class="rating-category">Content Depth</div>
+                    <div class="rating-score bloxfruits">9.5<span class="rating-total">/10</span></div>
+                </div>
+                <div class="rating-item">
+                    <div class="rating-category">Combat System</div>
+                    <div class="rating-score bloxfruits">8.5<span class="rating-total">/10</span></div>
+                </div>
+                <div class="rating-item">
+                    <div class="rating-category">Grind Intensity</div>
+                    <div class="rating-score bloxfruits">4.0<span class="rating-total">/10</span></div>
+                </div>
+                <div class="rating-item">
+                    <div class="rating-category">PvP Balance</div>
+                    <div class="rating-score bloxfruits">5.0<span class="rating-total">/10</span></div>
+                </div>
+                <div class="rating-item">
+                    <div class="rating-category">Long-Term Value</div>
+                    <div class="rating-score bloxfruits">9.0<span class="rating-total">/10</span></div>
+                </div>
+                <div class="rating-item">
+                    <div class="rating-category">Overall Experience</div>
+                    <div class="rating-score bloxfruits">8.0<span class="rating-total">/10</span></div>
+                </div>
+            </div>
+            
+            <p style="margin-top: 30px; text-align: center; font-size: 1.3em;"><strong>Overall Rating: 8.0/10 — Recommended for Grinding Enthusiasts</strong></p>
+        </div>
+    </div>
+    
+    <script>
+        // Matrix Canvas Animation
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()';
+        const fontSize = 16;
+        let columns = Math.floor(canvas.width / fontSize);
+        let drops = [];
+
+        function initDrops() {
+            drops = [];
+            columns = Math.floor(canvas.width / fontSize);
+            for (let i = 0; i < columns; i++) {
+                drops[i] = Math.floor(Math.random() * canvas.height / fontSize);
+            }
+        }
+        initDrops();
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(10, 10, 15, 0.08)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#b38cff';
+            ctx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = chars[Math.floor(Math.random() * chars.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+
+        setInterval(drawMatrix, 50);
+
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            initDrops();
+        });
+
+        // Navigation
+        function showReview(reviewId) {
+            document.getElementById('homePage').style.display = 'none';
+            document.querySelectorAll('.review-page').forEach(page => {
+                page.style.display = 'none';
+            });
+            const reviewPage = document.getElementById(reviewId);
+            if (reviewPage) {
+                reviewPage.style.display = 'block';
+                reviewPage.classList.add('active');
+            }
+            window.scrollTo(0, 0);
+        }
+
+        function backToHome() {
+            document.querySelectorAll('.review-page').forEach(page => {
+                page.style.display = 'none';
+                page.classList.remove('active');
+            });
+            document.getElementById('homePage').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+
+        // Admin Functions
+        document.querySelector('.admin-trigger').addEventListener('click', () => {
+            document.getElementById('adminLoginModal').classList.add('show');
+        });
+
+        function closeAdminLogin() {
+            document.getElementById('adminLoginModal').classList.remove('show');
+        }
+
+        function continueToTwoFactor() {
+            const password = document.getElementById('adminPassword').value;
+            if (password) {
+                document.getElementById('loginStep').style.display = 'none';
+                document.getElementById('twoFactorStep').style.display = 'block';
+                document.getElementById('loginError').style.display = 'none';
+            } else {
+                document.getElementById('loginError').style.display = 'block';
+                document.getElementById('loginError').textContent = 'Please enter password';
+            }
+        }
+
+        function backToLogin() {
+            document.getElementById('twoFactorStep').style.display = 'none';
+            document.getElementById('loginStep').style.display = 'block';
+            document.getElementById('twoFactorError').style.display = 'none';
+        }
+
+        function verifyAndLogin() {
+            const code = document.getElementById('twoFactorCode').value;
+            if (code && code.length === 6) {
+                document.getElementById('adminLoginModal').classList.remove('show');
+                document.getElementById('adminPanel').classList.add('show');
+            } else {
+                document.getElementById('twoFactorError').style.display = 'block';
+                document.getElementById('twoFactorError').textContent = 'Invalid 6-digit code';
+            }
+        }
+
+        function logoutAdmin() {
+            document.getElementById('adminPanel').classList.remove('show');
+            document.getElementById('loginStep').style.display = 'block';
+            document.getElementById('twoFactorStep').style.display = 'none';
+            document.getElementById('adminPassword').value = '';
+            document.getElementById('twoFactorCode').value = '';
+        }
+
+        function createReview() {
+            const title = document.getElementById('reviewTitle').value;
+            const developer = document.getElementById('reviewDeveloper').value;
+            const rating = document.getElementById('reviewRating').value;
+            const excerpt = document.getElementById('reviewExcerpt').value;
+
+            if (title && developer && rating && excerpt) {
+                alert(`Review "${title}" created successfully!\n\nThis will auto-publish in the specified time.\n\n(Connect to backend to save permanently)`);
+                
+                document.getElementById('reviewTitle').value = '';
+                document.getElementById('reviewDeveloper').value = '';
+                document.getElementById('reviewCategory').value = '';
+                document.getElementById('reviewLink').value = '';
+                document.getElementById('verifiedDev').checked = false;
+                document.getElementById('reviewRating').value = '';
+                document.getElementById('reviewExcerpt').value = '';
+            } else {
+                alert('Please fill in all required fields (Title, Developer, Rating, Description)');
+            }
+        }
+
+        // Tab switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            console.log('Nexus Reviews loaded successfully!');
+        });
+    </script>
+</body>
+</html>
